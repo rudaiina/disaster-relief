@@ -1,5 +1,0 @@
-0000000000000000000000000000000000000000 23e218685d488b6c32e4a1b9911a890c4a62871b Prathiba Sendil Kumar <prathibasendilkumart@gmail.com> 1786557335 +0530	commit (initial): Initial commit
-23e218685d488b6c32e4a1b9911a890c4a62871b 23e218685d488b6c32e4a1b9911a890c4a62871b Prathiba Sendil Kumar <prathibasendilkumart@gmail.com> 1786557363 +0530	Branch: renamed refs/heads/main to refs/heads/main
-23e218685d488b6c32e4a1b9911a890c4a62871b 23e218685d488b6c32e4a1b9911a890c4a62871b Prathiba Sendil Kumar <prathibasendilkumart@gmail.com> 1786638719 +0530	Branch: renamed refs/heads/main to refs/heads/main
-23e218685d488b6c32e4a1b9911a890c4a62871b 1f9159954d2889df70c13349266ebe370c3c944b Prathiba Sendil Kumar <prathibasendilkumart@gmail.com> 1786817209 +0530	commit: Add standard project files (excluding large files)
-1f9159954d2889df70c13349266ebe370c3c944b c7258a34d97d62fdd41d42d4c900de9ddd251dd9 Rudaina <rudaleem@gmail.com> 1791889176 +0530	commit: Remove large files from Git tracking

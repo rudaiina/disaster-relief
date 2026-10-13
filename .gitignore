@@ -1,2 +1,10 @@
+# Git history backup
+.git_backup/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Large files
 disaster_relief_resource_allocation.csv
 model/disaster_priority_model.pkl
