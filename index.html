@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Disaster Relief AI - Resource Allocation Command Center</title>
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet CSS for GIS Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+
+  <!-- App Custom Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Navigation Header Bar matching Figma Top Bar -->
+  <header class="app-header">
+    <div class="brand-container">
+      <div class="brand-logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary-accent);">
+          <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+          <polyline points="2 17 12 22 22 17"/>
+          <polyline points="2 12 12 17 22 12"/>
+        </svg>
+        Disaster Relief AI
+      </div>
+      <span class="brand-badge">LIVE SYSTEM</span>
+    </div>
+
+    <nav class="nav-tabs">
+      <div class="nav-tab active" data-screen="screen-overview">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Overview Table
+      </div>
+      <div class="nav-tab" data-screen="screen-detail">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        AI Inspector
+      </div>
+      <div class="nav-tab" data-screen="screen-form">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Submit Report
+      </div>
+      <div class="nav-tab" data-screen="screen-map">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+        GIS Map View
+      </div>
+      <div class="nav-tab" data-screen="screen-analytics">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        XAI Analytics
+      </div>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="btn btn-outline" onclick="switchScreen('screen-auth')">Sign Out</button>
+      <div class="user-profile">
+        <div class="avatar">FC</div>
+        <span>Field Commander</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- SCREEN 1: AUTHENTICATION SCREEN -->
+  <main id="screen-auth" class="screen-view">
+    <div class="auth-wrapper">
+      <div class="auth-card">
+        <div class="logo-area">
+          <div class="brand-logo" style="justify-content: center; font-size: 1.4rem; margin-bottom: 8px;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: var(--primary-accent);">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+              <polyline points="2 17 12 22 22 17"/>
+              <polyline points="2 12 12 17 22 12"/>
+            </svg>
+            Disaster Relief AI
+          </div>
+          <p>Resource Allocation & Emergency Operations</p>
+        </div>
+
+        <form id="auth-form">
+          <div class="form-group">
+            <label class="form-label">Commander ID / Official Email</label>
+            <input type="text" class="form-input" value="commander@relief-ops.org" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Security Authorization Token</label>
+            <input type="password" class="form-input" value="••••••••••••" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 1rem;">
+            LOG IN TO COMMAND CENTER
+          </button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- SCREEN 2: REQUESTS OVERVIEW TABLE -->
+  <main id="screen-overview" class="screen-view active">
+    <div class="page-title-bar">
+      <div>
+        <h1>REQUESTS OVERVIEW</h1>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Real-time incoming disaster relief requests & AI allocation priorities</p>
+      </div>
+      <button class="btn btn-primary" onclick="switchScreen('screen-form')">+ New Disaster Report</button>
+    </div>
+
+    <div class="filter-toolbar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" class="form-input" placeholder="Search by ID, country, region, disaster type...">
+      </div>
+
+      <div class="filter-pills">
+        <span class="filter-pill active" data-filter="ALL">ALL</span>
+        <span class="filter-pill" data-filter="CRITICAL">CRITICAL</span>
+        <span class="filter-pill" data-filter="HIGH">HIGH</span>
+        <span class="filter-pill" data-filter="MEDIUM">MEDIUM</span>
+        <span class="filter-pill" data-filter="LOW">LOW</span>
+      </div>
+    </div>
+
+    <div class="data-table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>REQUEST ID</th>
+            <th>LOCATION / REGION</th>
+            <th>DISASTER TYPE</th>
+            <th>POPULATION AFFECTED</th>
+            <th>DAMAGE SCORE</th>
+            <th>ALLOCATION PRIORITY</th>
+            <th>ACTION</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <!-- Populated dynamically by app.js -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- SCREEN 3: REQUEST DETAIL & AI PREDICTION INSPECTOR -->
+  <main id="screen-detail" class="screen-view">
+    <div id="detail-content">
+      <!-- Populated dynamically by app.js -->
+    </div>
+  </main>
+
+  <!-- SCREEN 4: SUBMIT NEW DISASTER REPORT FORM -->
+  <main id="screen-form" class="screen-view">
+    <div class="page-title-bar">
+      <div>
+        <h1>NEW DISASTER REPORT</h1>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Submit incident field metrics to trigger live HistGradientBoosting AI prediction</p>
+      </div>
+      <button class="btn btn-outline" onclick="switchScreen('screen-overview')">Cancel</button>
+    </div>
+
+    <div class="card form-card">
+      <div class="preset-selector">
+        <div>
+          <div style="font-size: 0.85rem; font-weight: 800; text-transform: uppercase;">Quick Preset Scenario Fill:</div>
+          <div style="font-size: 0.78rem; color: var(--text-muted);">Populate realistic test data into the form for rapid demo submission</div>
+        </div>
+        <div class="preset-btns">
+          <button type="button" class="preset-btn" onclick="loadPresetForm('cyclone')">⚡ Cyclone (Dhaka)</button>
+          <button type="button" class="preset-btn" onclick="loadPresetForm('earthquake')">⚡ Earthquake (Hatay)</button>
+        </div>
+      </div>
+
+      <form id="disaster-form">
+        <h4 style="margin-bottom: 1rem; color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem;">1. Location & Disaster Categorization</h4>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Country</label>
+            <input type="text" name="country" class="form-input" value="Bangladesh" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">State / Province</label>
+            <input type="text" name="state_province" class="form-input" value="Dhaka" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Region Name</label>
+            <input type="text" name="region_name" class="form-input" value="Stoneburg" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Disaster Type</label>
+            <select name="disaster_type" class="form-select">
+              <option value="Cyclone">Cyclone</option>
+              <option value="Earthquake">Earthquake</option>
+              <option value="Flood">Flood</option>
+              <option value="Wildfire">Wildfire</option>
+              <option value="Tsunami">Tsunami</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Latitude</label>
+            <input type="number" step="any" name="latitude" class="form-input" value="20.65" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Longitude</label>
+            <input type="number" step="any" name="longitude" class="form-input" value="89.23" required>
+          </div>
+        </div>
+
+        <h4 style="margin: 1.5rem 0 1rem 0; color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem;">2. Impact Severity & Infrastructure</h4>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Population Affected</label>
+            <input type="number" name="population_affected" class="form-input" value="4500" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Infrastructure Damage Score (0-100)</label>
+            <input type="number" step="0.1" name="infrastructure_damage_score" class="form-input" value="82.0" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Injuries Reported</label>
+            <input type="number" name="injuries_reported" class="form-input" value="85" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Fatalities Reported</label>
+            <input type="number" name="fatalities_reported" class="form-input" value="12" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Accessibility Status</label>
+            <select name="accessibility_status" class="form-select">
+              <option value="Inaccessible">Inaccessible</option>
+              <option value="Partially Accessible">Partially Accessible</option>
+              <option value="Accessible">Accessible</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nearest Relief Center Distance (km)</label>
+            <input type="number" step="0.1" name="nearest_relief_center_distance_km" class="form-input" value="25.4" required>
+          </div>
+        </div>
+
+        <h4 style="margin: 1.5rem 0 1rem 0; color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem;">3. Resource Stocks vs. Requests</h4>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Food Stock (kg)</label>
+            <input type="number" name="food_stock_kg" class="form-input" value="1000" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Requested Food (kg)</label>
+            <input type="number" name="requested_food_kg" class="form-input" value="4000" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Water Stock (Liters)</label>
+            <input type="number" name="water_stock_liters" class="form-input" value="800" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Requested Water (Liters)</label>
+            <input type="number" name="requested_water_liters" class="form-input" value="12000" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Field Observer Notes</label>
+          <textarea name="field_notes" class="form-textarea" rows="3">Severe flooding and power grid collapse across all local relief centers.</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 1.5rem;">
+          ⚡ RUN AI PREDICTION & SUBMIT REPORT
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <!-- SCREEN 5: LIVE EMERGENCY GIS MAP VIEW -->
+  <main id="screen-map" class="screen-view">
+    <div class="page-title-bar" style="margin-bottom: 1rem;">
+      <div>
+        <h1>LIVE GIS EMERGENCY MAP</h1>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Geospatial tracking of active disaster incidents & resource deployment priority</p>
+      </div>
+    </div>
+
+    <div class="map-layout">
+      <div class="map-sidebar">
+        <div class="map-sidebar-header">
+          <div style="font-weight: 800; font-size: 0.85rem; text-transform: uppercase;">Active Incident Directory</div>
+          <div style="font-size: 0.78rem; color: var(--text-muted);">Click an incident to locate on map</div>
+        </div>
+        <div id="map-incident-list" class="map-incident-list">
+          <!-- Populated dynamically by map.js -->
+        </div>
+      </div>
+
+      <div id="gis-map"></div>
+    </div>
+  </main>
+
+  <!-- SCREEN 6: XAI & ANALYTICS DASHBOARD -->
+  <main id="screen-analytics" class="screen-view">
+    <div class="page-title-bar">
+      <div>
+        <h1>ANALYTICS & AI DECISION DRIVERS</h1>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Explainable AI (XAI) feature permutation importance & resource allocation metrics</p>
+      </div>
+    </div>
+
+    <div class="analytics-grid">
+      <div class="stat-card">
+        <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted);">Total Active Incidents</div>
+        <div id="stat-total-incidents" class="stat-value">6</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--primary-accent);">High/Critical Priority Alerts</div>
+        <div id="stat-critical-alerts" class="stat-value" style="color: var(--primary-accent);">4</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted);">Total Affected Population</div>
+        <div id="stat-total-pop" class="stat-value">45,180</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted);">Global Food Deficit</div>
+        <div id="stat-total-deficit" class="stat-value">39,500 kg</div>
+      </div>
+    </div>
+
+    <div class="charts-row">
+      <div class="chart-card">
+        <h3 style="margin-bottom: 1rem; font-size: 1rem; text-transform: uppercase; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+          Explainable AI: Top 10 Decision Drivers
+        </h3>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+          Relative impact on accuracy calculated via Permutation Importance (native HistGradientBoosting).
+        </p>
+        <div id="xai-bars-container">
+          <!-- Rendered dynamically by app.js -->
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3 style="margin-bottom: 1rem; font-size: 1rem; text-transform: uppercase; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+          Priority Distribution & Allocation Policy
+        </h3>
+        <div style="background: var(--bg-main); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 1.25rem;">
+          <div style="font-size: 0.85rem; font-weight: 800; margin-bottom: 8px;">Resource Allocation Strategy:</div>
+          <p style="font-size: 0.85rem; color: var(--text-main); line-height: 1.6;">
+            Disasters tagged as <strong>CRITICAL</strong> or <strong>HIGH</strong> receive priority dispatch of mobile relief units within 4 hours. 
+            The AI model heavily penalizes locations with high infrastructure damage scores and unaccessible road connectivity.
+          </p>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 1rem;">
+          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700;">
+            <span>CRITICAL (Immediate Dispatch)</span>
+            <span style="color: var(--primary-accent);">50% of active cases</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700;">
+            <span>HIGH (Dispatch within 12h)</span>
+            <span style="color: var(--badge-high-bg);">33% of active cases</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700;">
+            <span>MEDIUM & LOW (Monitor)</span>
+            <span style="color: var(--text-muted);">17% of active cases</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Leaflet GIS JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  
+  <!-- Application JS Modules -->
+  <script src="js/data.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
